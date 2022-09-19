@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Build", "build\Build.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoidEdgeMain", "VoidEdgeMain\VoidEdgeMain.csproj", "{EFC2DDAD-6730-40A9-A958-AD6E5DD60619}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntiPing", "AntiPing\AntiPing.csproj", "{028A4B95-AE39-4F1B-A0B5-E4CE39EEDC1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{EFC2DDAD-6730-40A9-A958-AD6E5DD60619}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFC2DDAD-6730-40A9-A958-AD6E5DD60619}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFC2DDAD-6730-40A9-A958-AD6E5DD60619}.Release|Any CPU.Build.0 = Release|Any CPU
+		{028A4B95-AE39-4F1B-A0B5-E4CE39EEDC1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{028A4B95-AE39-4F1B-A0B5-E4CE39EEDC1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{028A4B95-AE39-4F1B-A0B5-E4CE39EEDC1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{028A4B95-AE39-4F1B-A0B5-E4CE39EEDC1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

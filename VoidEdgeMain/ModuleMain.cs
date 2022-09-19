@@ -77,12 +77,18 @@ public class ModuleMain : BaseModule
     {
         if (context.GetArgument("user1", out IUser? user1) && context.GetArgument("user2", out IUser? user2))
         {
+            if (user1.Id == instance.Client.CurrentUser.Id && user1.Id == user2.Id)
+            {
+                await context.RespondAsync("shipping me with myself? :flushed:\ni'd rate it 11/10 ngl");
+                return;
+            }
+            
             if (user1.Id == instance.Client.CurrentUser.Id)
             {
                 await context.RespondAsync($"why are you shipping me with {user2.Username}, ew");
                 return;
             }
-            
+
             if (user2.Id == instance.Client.CurrentUser.Id)
             {
                 await context.RespondAsync($"why are you shipping me with {user1.Username}, ew");
@@ -133,7 +139,7 @@ public class ModuleMain : BaseModule
         EmbedBuilder embedBuilder = new EmbedBuilder()
             .WithTitle("Void Edge help panel")
             .WithDescription("Finding my commands? They're available as **slash commands** and you can find them by typing `/`")
-            .WithFooter("Runs on TAB2 backend (TAB's an Awesome Bot 2, an in-house, asynchronous, multi-threaded and scalable Discord bot backend)");
+            .WithCurrentTimestamp();
         
         await context.RespondAsync(embed: embedBuilder.Build());
     }

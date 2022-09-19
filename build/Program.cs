@@ -55,7 +55,8 @@ public class CopyModulesTask : FrostingTask<BuildContext>
 {
     private readonly string[] modules =
     {
-        "VoidEdgeMain"
+        "VoidEdgeMain",
+        "AntiPing"
     };
     
     public override void Run(BuildContext context)
