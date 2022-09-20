@@ -52,6 +52,12 @@ public class DiscordCommandInfo
         Arguments.Add(argumentInfo);
         return this;
     }
+    
+    public DiscordCommandInfo AddRoleArgument(string name, string description, bool isRequired = true)
+    {
+        Arguments.Add(new RoleArgumentInfo(name, description, isRequired));
+        return this;
+    }
 
     public DiscordCommandInfo Executes(CommandExecutesTaskDelegate executesTaskDelegate)
     {

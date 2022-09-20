@@ -88,6 +88,12 @@ public class SlashCommandManager
             return;
         }
         
+        if (info is RoleArgumentInfo)
+        {
+            builder.AddOption(info.Name, ApplicationCommandOptionType.Role, info.Description, info.IsRequired);
+            return;
+        }
+        
         if (info is EnumArgumentInfo enumArgumentInfo)
         {
             builder.AddOption(info.Name, ApplicationCommandOptionType.Integer, info.Description, info.IsRequired, 
