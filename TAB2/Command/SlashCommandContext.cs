@@ -37,6 +37,16 @@ public class SlashCommandContext : ICommandContext
         return false;
     }
 
+    public object? GetArgument(string name)
+    {
+        if (arguments.TryGetValue(name, out object? value))
+        {
+            return value;
+        }
+
+        return null;
+    }
+
     public async Task DeferAsync()
     {
         deferred = true;

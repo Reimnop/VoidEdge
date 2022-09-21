@@ -30,7 +30,7 @@ public class TAB2Loader : IDisposable, IBotInstance
         
         DiscordSocketConfig config = new DiscordSocketConfig();
         config.DefaultRetryMode = RetryMode.AlwaysRetry;
-        config.GatewayIntents = GatewayIntents.Guilds;
+        config.GatewayIntents = GatewayIntents.All;
 
         Client = new DiscordSocketClient(config);
         

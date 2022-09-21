@@ -26,10 +26,40 @@ public class ModuleMain : BaseModule
         dataManager.RegisterData(Id, config);
     }
 
+    public override async Task OnMessageReceived(SocketMessage message)
+    {
+        if (message.Author.IsBot)
+        {
+            return;
+        }
+
+        if (message is not SocketUserMessage userMessage)
+        {
+            return;
+        }
+        
+        if (userMessage.Channel is not SocketGuildChannel guildChannel)
+        {
+            return;
+        }
+        
+        GuildConfig guildConfig = config.GetGuildConfig(guildChannel.Guild.Id);
+        
+        IEnumerable<SocketGuildUser> pingedUsers = userMessage.MentionedUsers
+            .OfType<SocketGuildUser>()
+            .Where(x => x.Id != userMessage.Author.Id)
+            .Where(x => x.Roles.Any(r => guildConfig.PingRoleIds.Contains(r.Id)));
+
+        foreach (SocketGuildUser pingedUser in pingedUsers)
+        {
+            await userMessage.ReplyAsync($"you can't ping {pingedUser.Username} dumbass");
+        }
+    }
+
     public override IEnumerator<DiscordCommandInfo> OnCommandRegister()
     {
         yield return new DiscordCommandInfo()
-            .WithName("antipingconfig")
+            .WithName("antipingroles")
             .WithDescription("Changes how Anti Ping behaves")
             .AddEnumArgument("mode", "Add or Remove", x => x
                 .AddOption(0, "Add")
@@ -45,20 +75,32 @@ public class ModuleMain : BaseModule
             await context.RespondAsync("This command can only be used in a guild!");
             return;
         }
-        
-        if (context.GetArgument("mode", out int? mode) && context.GetArgument("role", out IRole? role))
+
+        if (context.GetArgument("mode", out long mode) && context.GetArgument("role", out IRole? role))
         {
             GuildConfig guildConfig = config.GetGuildConfig(guildChannel.Guild.Id);
-            
+
             if (mode == 0)
             {
                 guildConfig.AddRoleId(role.Id);
-                await context.RespondAsync($"Added {role.Mention} to anti ping config!");
+                dataManager.SaveData(Id);
+
+                EmbedBuilder embedBuilder = new EmbedBuilder()
+                    .WithTitle("Success")
+                    .WithDescription($"Added {role.Mention} to anti ping config!");
+                
+                await context.RespondAsync(embed: embedBuilder.Build());
             }
             else if (mode == 1)
             {
                 guildConfig.RemoveRoleId(role.Id);
-                await context.RespondAsync($"Removed {role.Mention} from anti ping config!");
+                dataManager.SaveData(Id);
+                
+                EmbedBuilder embedBuilder = new EmbedBuilder()
+                    .WithTitle("Success")
+                    .WithDescription($"Removed {role.Mention} from anti ping config!");
+                
+                await context.RespondAsync(embed: embedBuilder.Build());
             }
         }
     }

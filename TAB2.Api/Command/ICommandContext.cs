@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Discord;
+﻿using Discord;
 using Discord.WebSocket;
 
 namespace TAB2.Api.Command;
@@ -10,6 +9,7 @@ public interface ICommandContext
     ISocketMessageChannel Channel { get; }
 
     bool GetArgument<T>(string name, out T? value);
+    object? GetArgument(string name);
     Task DeferAsync();
     Task RespondAsync(string message = "", Embed? embed = null);
 }

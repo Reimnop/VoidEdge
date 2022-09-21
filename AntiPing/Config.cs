@@ -29,10 +29,10 @@ public class Config : IPersistentData
     {
         foreach (var (id, config) in guildConfigs)
         {
-            TagCompound guildCompound = new TagCompound();
-            config.WriteData(compound);
+            TagDictionary dictionary = new TagDictionary();
+            config.WriteData(dictionary);
 
-            compound.Value.Add(id.ToString(), guildCompound);
+            compound.Value.Add(id.ToString(), dictionary);
         }
     }
 
@@ -42,11 +42,11 @@ public class Config : IPersistentData
         
         foreach (Tag tag in compound.Value)
         {
-            string name = tag.Name;
-            TagCompound guildCompound = (TagCompound) tag.GetValue();
-            ulong id = ulong.Parse(name);
+            ulong id = ulong.Parse(tag.Name);
+            TagDictionary dictionary = (TagDictionary) tag.GetValue();
             GuildConfig config = new GuildConfig();
-            config.ReadData(guildCompound);
+            config.ReadData(dictionary);
+            
             guildConfigs.Add(id, config);
         }
     }

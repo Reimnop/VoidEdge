@@ -3,7 +3,7 @@ using TAB2.Api.Data;
 
 namespace AntiPing;
 
-public class GuildConfig : IPersistentData
+public class GuildConfig
 {
     public HashSet<ulong> PingRoleIds { get; } = new HashSet<ulong>();
 
@@ -23,20 +23,20 @@ public class GuildConfig : IPersistentData
         }
     }
     
-    public void WriteData(TagCompound compound)
+    public void WriteData(TagDictionary dictionary)
     {
-        long[] ids = PingRoleIds.Select(x => unchecked((long) x)).ToArray();
-        compound.Value.Add("role_ids", ids);
+        string[] ids = PingRoleIds.Select(x => x.ToString()).ToArray();
+        dictionary.Add("role_ids", ids);
     }
 
-    public void ReadData(TagCompound compound)
+    public void ReadData(TagDictionary dictionary)
     {
         PingRoleIds.Clear();
         
-        long[] ids = (long[]) compound["role_ids"].GetValue();
-        foreach (long id in ids)
+        TagCollection tags = (TagCollection) dictionary["role_ids"].GetValue();
+        foreach (Tag tag in tags)
         {
-            PingRoleIds.Add(unchecked((ulong) id));
+            PingRoleIds.Add(ulong.Parse((string) tag.GetValue()));
         }
     }
 }
