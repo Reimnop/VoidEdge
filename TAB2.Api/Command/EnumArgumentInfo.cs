@@ -4,7 +4,7 @@ public class EnumArgumentInfo : ArgumentInfo
 {
     public List<(int, string)> Options { get; }
 
-    public EnumArgumentInfo(string name, string description, bool isRequired) : base(name, description, isRequired)
+    public EnumArgumentInfo(string name, string description, bool isRequired = true) : base(name, description, isRequired)
     {
         Options = new List<(int, string)>();
     }

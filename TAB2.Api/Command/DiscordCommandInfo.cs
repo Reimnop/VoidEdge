@@ -21,41 +21,9 @@ public class DiscordCommandInfo
         return this;
     }
 
-    public DiscordCommandInfo AddIntArgument(string name, string description, bool isRequired = true)
+    public DiscordCommandInfo AddArgument(ArgumentInfo argumentInfo)
     {
-        Arguments.Add(new IntArgumentInfo(name, description, isRequired));
-        return this;
-    }
-    
-    public DiscordCommandInfo AddDoubleArgument(string name, string description, bool isRequired = true)
-    {
-        Arguments.Add(new DoubleArgumentInfo(name, description, isRequired));
-        return this;
-    }
-    
-    public DiscordCommandInfo AddStringArgument(string name, string description, bool isRequired = true)
-    {
-        Arguments.Add(new StringArgumentInfo(name, description, isRequired));
-        return this;
-    }
-    
-    public DiscordCommandInfo AddUserArgument(string name, string description, bool isRequired = true)
-    {
-        Arguments.Add(new UserArgumentInfo(name, description, isRequired));
-        return this;
-    }
-
-    public DiscordCommandInfo AddEnumArgument(string name, string description, Action<EnumArgumentInfo> addFunc, bool isRequired = true)
-    {
-        EnumArgumentInfo argumentInfo = new EnumArgumentInfo(name, description, isRequired);
-        addFunc(argumentInfo);
         Arguments.Add(argumentInfo);
-        return this;
-    }
-    
-    public DiscordCommandInfo AddRoleArgument(string name, string description, bool isRequired = true)
-    {
-        Arguments.Add(new RoleArgumentInfo(name, description, isRequired));
         return this;
     }
 

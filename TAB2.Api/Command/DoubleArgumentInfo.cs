@@ -2,7 +2,7 @@
 
 public class DoubleArgumentInfo : ArgumentInfo
 {
-    public DoubleArgumentInfo(string name, string description, bool isRequired) : base(name, description, isRequired)
+    public DoubleArgumentInfo(string name, string description, bool isRequired = true) : base(name, description, isRequired)
     {
     }
 }

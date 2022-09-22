@@ -2,7 +2,7 @@
 
 public class IntArgumentInfo : ArgumentInfo
 {
-    public IntArgumentInfo(string name, string description, bool isRequired) : base(name, description, isRequired)
+    public IntArgumentInfo(string name, string description, bool isRequired = true) : base(name, description, isRequired)
     {
     }
 }

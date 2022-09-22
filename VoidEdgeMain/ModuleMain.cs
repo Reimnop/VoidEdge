@@ -29,8 +29,8 @@ public class ModuleMain : BaseModule
         yield return new DiscordCommandInfo()
             .WithName("ship")
             .WithDescription("Ship 2 people :flushed:")
-            .AddUserArgument("user1", "The user to be shipped")
-            .AddUserArgument("user2", "The user to be shipped to")
+            .AddArgument(new UserArgumentInfo("user1", "The user to be shipped"))
+            .AddArgument(new UserArgumentInfo("user2", "The user to be shipped to"))
             .Executes(Ship);
 
         yield return new DiscordCommandInfo()
@@ -41,7 +41,7 @@ public class ModuleMain : BaseModule
         yield return new DiscordCommandInfo()
             .WithName("furry")
             .WithDescription("Rates the furriness of a user")
-            .AddUserArgument("user", "The user to rate", false)
+            .AddArgument(new UserArgumentInfo("user", "The user to rate", false))
             .Executes(Furry);
     }
 

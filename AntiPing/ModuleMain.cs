@@ -61,10 +61,10 @@ public class ModuleMain : BaseModule
         yield return new DiscordCommandInfo()
             .WithName("antipingroles")
             .WithDescription("Changes how Anti Ping behaves")
-            .AddEnumArgument("mode", "Add or Remove", x => x
+            .AddArgument(new EnumArgumentInfo("mode", "Add or Remove")
                 .AddOption(0, "Add")
                 .AddOption(1, "Remove"))
-            .AddRoleArgument("role", "The role which people who have it can not be pinged")
+            .AddArgument(new RoleArgumentInfo("role", "The role which people who have it can not be pinged"))
             .Executes(AntiPingConfig);
     }
 

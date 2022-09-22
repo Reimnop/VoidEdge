@@ -2,7 +2,7 @@
 
 public class StringArgumentInfo : ArgumentInfo
 {
-    public StringArgumentInfo(string name, string description, bool isRequired) : base(name, description, isRequired)
+    public StringArgumentInfo(string name, string description, bool isRequired = true) : base(name, description, isRequired)
     {
     }
 }
