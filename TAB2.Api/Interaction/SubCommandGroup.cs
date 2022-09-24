@@ -18,7 +18,7 @@ public class SubCommandGroup
         return this;
     }
 
-    public SubCommandGroup AddArgument(SubCommand subCommand)
+    public SubCommandGroup AddSubCommand(SubCommand subCommand)
     {
         SubCommands.Add(subCommand);
         return this;
