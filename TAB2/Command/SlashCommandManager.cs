@@ -1,5 +1,4 @@
 ﻿using Discord;
-using Discord.Commands.Builders;
 using Discord.WebSocket;
 using TAB2.Api.Interaction;
 
@@ -7,7 +6,7 @@ namespace TAB2.Command;
 
 public class SlashCommandManager
 {
-    private readonly Dictionary<string, Api.Interaction.Command> commands = new Dictionary<string, Api.Interaction.Command>();
+    private readonly Dictionary<MultiStringHash, CommandExecutesTaskDelegate> executesTasks = new Dictionary<MultiStringHash, CommandExecutesTaskDelegate>();
     private readonly DiscordSocketClient client;
 
     private List<SlashCommandBuilder>? commandBuilders = new List<SlashCommandBuilder>();
@@ -28,11 +27,35 @@ public class SlashCommandManager
         SlashCommandBuilder commandBuilder = new SlashCommandBuilder()
             .WithName(command.Name)
             .WithDescription(command.Description);
+
+        foreach (SubCommand subCommand in command.SubCommands)
+        {
+            SlashCommandOptionBuilder subCommandBuilder = new SlashCommandOptionBuilder()
+                .WithName(subCommand.Name)
+                .WithDescription(subCommand.Description);
+
+            SubCommandOptionAdder subCommandOptionAdder = new SubCommandOptionAdder(subCommandBuilder);
+            foreach (Argument argument in subCommand.Arguments)
+            {
+                SetupArgument(subCommandOptionAdder, argument);
+            }
             
-        command.Arguments.ForEach(x => SetupArgument(commandBuilder, x));
+            AddCommandTask(subCommand.ExecutesTaskDelegate, command.Name, subCommand.Name);
+        }
+
+        SlashCommandOptionAdder optionAdder = new SlashCommandOptionAdder(commandBuilder);
+        command.Arguments.ForEach(x => SetupArgument(optionAdder, x));
         
         commandBuilders.Add(commandBuilder);
-        commands.Add(command.Name, command);
+        AddCommandTask(command.ExecutesTaskDelegate, command.Name);
+    }
+
+    private void AddCommandTask(CommandExecutesTaskDelegate? taskDelegate, params string[] names)
+    {
+        if (taskDelegate != null)
+        {
+            executesTasks.Add(new MultiStringHash(names), taskDelegate);
+        }
     }
 
     public async Task Freeze()
@@ -62,42 +85,42 @@ public class SlashCommandManager
         await guild.BulkOverwriteApplicationCommandAsync(commandProperties);
     }
 
-    private void SetupArgument(SlashCommandBuilder builder, Argument info)
+    private void SetupArgument(IOptionAdder adder, Argument argument)
     {
-        if (info is IntArgument)
+        if (argument is IntArgument)
         {
-            builder.AddOption(info.Name, ApplicationCommandOptionType.Integer, info.Description, info.IsRequired);
+            adder.AddOption(argument.Name, ApplicationCommandOptionType.Integer, argument.Description, argument.IsRequired);
             return;
         }
         
-        if (info is DoubleArgument)
+        if (argument is DoubleArgument)
         {
-            builder.AddOption(info.Name, ApplicationCommandOptionType.Number, info.Description, info.IsRequired);
+            adder.AddOption(argument.Name, ApplicationCommandOptionType.Number, argument.Description, argument.IsRequired);
             return;
         }
         
-        if (info is StringArgument)
+        if (argument is StringArgument)
         {
-            builder.AddOption(info.Name, ApplicationCommandOptionType.String, info.Description, info.IsRequired);
+            adder.AddOption(argument.Name, ApplicationCommandOptionType.String, argument.Description, argument.IsRequired);
             return;
         }
         
-        if (info is UserArgument)
+        if (argument is UserArgument)
         {
-            builder.AddOption(info.Name, ApplicationCommandOptionType.User, info.Description, info.IsRequired);
+            adder.AddOption(argument.Name, ApplicationCommandOptionType.User, argument.Description, argument.IsRequired);
             return;
         }
         
-        if (info is RoleArgument)
+        if (argument is RoleArgument)
         {
-            builder.AddOption(info.Name, ApplicationCommandOptionType.Role, info.Description, info.IsRequired);
+            adder.AddOption(argument.Name, ApplicationCommandOptionType.Role, argument.Description, argument.IsRequired);
             return;
         }
         
-        if (info is EnumArgument enumArgumentInfo)
+        if (argument is EnumArgument enumArgument)
         {
-            builder.AddOption(info.Name, ApplicationCommandOptionType.Integer, info.Description, info.IsRequired, 
-                choices: enumArgumentInfo.Options
+            adder.AddOption(enumArgument.Name, ApplicationCommandOptionType.Integer, enumArgument.Description, enumArgument.IsRequired, 
+                choices: enumArgument.Options
                     .Select(x => new ApplicationCommandOptionChoiceProperties
                     {
                         Name = x.Item2,
@@ -108,16 +131,13 @@ public class SlashCommandManager
         }
     }
 
-    public Task RunCommand(string command, ICommandContext context)
+    public Task RunCommand(ICommandContext context, params string[] commandNames)
     {
-        if (commands.TryGetValue(command, out Api.Interaction.Command? discordCommand))
+        MultiStringHash nameHash = new MultiStringHash(commandNames);
+        if (executesTasks.TryGetValue(nameHash, out CommandExecutesTaskDelegate? taskDelegate))
         {
-            if (discordCommand.ExecutesTaskDelegate != null)
-            {
-                return discordCommand.ExecutesTaskDelegate(context);
-            }
+            return taskDelegate(context);
         }
-        
         return Task.CompletedTask;
     }
 }

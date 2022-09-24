@@ -154,7 +154,8 @@ public class TAB2Loader : IDisposable, IBotInstance
     private async Task ClientOnSlashCommandExecuted(SocketSlashCommand slashCommand)
     {
         SlashCommandContext context = new SlashCommandContext(slashCommand);
-        await slashCommandManager.RunCommand(slashCommand.CommandName, context);
+        // TODO: get subcommands...
+        await slashCommandManager.RunCommand(context, slashCommand.CommandName);
     }
 
     private async Task ClientOnReady()
