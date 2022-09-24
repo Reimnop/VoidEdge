@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using TAB2.Api;
-using TAB2.Api.Command;
+using TAB2.Api.Interaction;
 using TAB2.Api.Module;
 
 namespace AntiPing;
@@ -56,15 +56,15 @@ public class ModuleMain : BaseModule
         }
     }
 
-    public override IEnumerator<DiscordCommandInfo> OnCommandRegister()
+    public override IEnumerator<Command> OnCommandRegister()
     {
-        yield return new DiscordCommandInfo()
+        yield return new Command()
             .WithName("antipingroles")
             .WithDescription("Changes how Anti Ping behaves")
-            .AddArgument(new EnumArgumentInfo("mode", "Add or Remove")
+            .AddArgument(new EnumArgument("mode", "Add or Remove")
                 .AddOption(0, "Add")
                 .AddOption(1, "Remove"))
-            .AddArgument(new RoleArgumentInfo("role", "The role which people who have it can not be pinged"))
+            .AddArgument(new RoleArgument("role", "The role which people who have it can not be pinged"))
             .Executes(AntiPingConfig);
     }
 

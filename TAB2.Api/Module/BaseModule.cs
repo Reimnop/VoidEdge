@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
-using TAB2.Api.Command;
+using TAB2.Api.Interaction;
 
 using IMessage = Discord.IMessage;
 
@@ -11,7 +11,7 @@ public abstract class BaseModule
 {
     public abstract void Initialize(IBotInstance instance);
 
-    public abstract IEnumerator<DiscordCommandInfo> OnCommandRegister();
+    public abstract IEnumerator<Command> OnCommandRegister();
 
     #region DefaultEvents
     public virtual Task OnReady() => Task.CompletedTask;

@@ -1,6 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using TAB2.Api.Command;
+using TAB2.Api.Interaction;
 
 namespace TAB2.Command;
 

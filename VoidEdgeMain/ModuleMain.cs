@@ -1,6 +1,6 @@
 ﻿using Discord;
 using TAB2.Api;
-using TAB2.Api.Command;
+using TAB2.Api.Interaction;
 using TAB2.Api.Module;
 
 namespace VoidEdgeMain;
@@ -19,29 +19,29 @@ public class ModuleMain : BaseModule
         this.instance = instance;
     }
 
-    public override IEnumerator<DiscordCommandInfo> OnCommandRegister()
+    public override IEnumerator<Command> OnCommandRegister()
     {
-        yield return new DiscordCommandInfo()
+        yield return new Command()
             .WithName("help")
             .WithDescription("Show bot help")
             .Executes(Help);
         
-        yield return new DiscordCommandInfo()
+        yield return new Command()
             .WithName("ship")
             .WithDescription("Ship 2 people :flushed:")
-            .AddArgument(new UserArgumentInfo("user1", "The user to be shipped"))
-            .AddArgument(new UserArgumentInfo("user2", "The user to be shipped to"))
+            .AddArgument(new UserArgument("user1", "The user to be shipped"))
+            .AddArgument(new UserArgument("user2", "The user to be shipped to"))
             .Executes(Ship);
 
-        yield return new DiscordCommandInfo()
+        yield return new Command()
             .WithName("whether")
             .WithDescription("Whether we wanted it or not, we've stepped into a war with the Cabal on Mars.")
             .Executes(Whether);
         
-        yield return new DiscordCommandInfo()
+        yield return new Command()
             .WithName("furry")
             .WithDescription("Rates the furriness of a user")
-            .AddArgument(new UserArgumentInfo("user", "The user to rate", false))
+            .AddArgument(new UserArgument("user", "The user to rate", false))
             .Executes(Furry);
     }
 

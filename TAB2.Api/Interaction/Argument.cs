@@ -1,12 +1,12 @@
-﻿namespace TAB2.Api.Command;
+﻿namespace TAB2.Api.Interaction;
 
-public abstract class ArgumentInfo
+public abstract class Argument
 {
     public string Name { get; set; }
     public string Description { get; set; }
     public bool IsRequired { get; set; }
 
-    public ArgumentInfo(string name, string description, bool isRequired)
+    public Argument(string name, string description, bool isRequired)
     {
         Name = name;
         Description = description;

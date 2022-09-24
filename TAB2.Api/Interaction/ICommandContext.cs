@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
-namespace TAB2.Api.Command;
+namespace TAB2.Api.Interaction;
 
 public interface ICommandContext
 {

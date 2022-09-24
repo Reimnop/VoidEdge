@@ -3,7 +3,7 @@ using Discord;
 using Discord.WebSocket;
 using log4net;
 using TAB2.Api;
-using TAB2.Api.Command;
+using TAB2.Api.Interaction;
 using TAB2.Api.Module;
 using TAB2.Command;
 using TAB2.Module;
@@ -165,12 +165,12 @@ public class TAB2Loader : IDisposable, IBotInstance
 
     private void RegisterCommands(BaseModule module)
     {
-        IEnumerator<DiscordCommandInfo> enumerator = module.OnCommandRegister();
+        IEnumerator<Api.Interaction.Command> enumerator = module.OnCommandRegister();
 
         while (enumerator.MoveNext())
         {
-            DiscordCommandInfo discordCommandInfo = enumerator.Current;
-            slashCommandManager.RegisterCommand(discordCommandInfo);
+            Api.Interaction.Command command = enumerator.Current;
+            slashCommandManager.RegisterCommand(command);
         }
     }
 
