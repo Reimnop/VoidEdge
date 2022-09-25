@@ -14,10 +14,13 @@ public class ModuleMain : BaseModule
     public const string Id = "antiping";
     public const string Version = "1.0.0";
 
+    public const string StrikesId = $"{Id}_strikes";
+
     private IBotInstance instance;
     private IDataManager dataManager;
     
     private Config config = new Config();
+    private StrikeData strikeData = new StrikeData();
 
     public override void Initialize(IBotInstance instance)
     {
@@ -25,6 +28,7 @@ public class ModuleMain : BaseModule
         dataManager = instance.DataManager;
         
         dataManager.RegisterData(Id, config);
+        dataManager.RegisterData(StrikesId, config);
     }
 
     public override async Task OnMessageReceived(SocketMessage message)

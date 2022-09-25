@@ -5,7 +5,7 @@ namespace AntiPing;
 
 public class Config : IPersistentData
 {
-    private Dictionary<ulong, GuildConfig> guildConfigs = new Dictionary<ulong, GuildConfig>();
+    private readonly Dictionary<ulong, GuildConfig> guildConfigs = new Dictionary<ulong, GuildConfig>();
 
     public GuildConfig GetGuildConfig(ulong guildId)
     {
