@@ -80,7 +80,8 @@ public class ModuleMain : BaseModule
                 .AddSubCommand(new SubCommand()
                     .WithName("list")
                     .WithDescription("List all anti ping roles")
-                    .Executes(ListRoles))
+                    .Executes(ListRoles)
+                )
             );
     }
 
