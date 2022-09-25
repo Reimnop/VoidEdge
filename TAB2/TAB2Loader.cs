@@ -3,7 +3,6 @@ using Discord;
 using Discord.WebSocket;
 using log4net;
 using TAB2.Api;
-using TAB2.Api.Interaction;
 using TAB2.Api.Module;
 using TAB2.Command;
 using TAB2.Module;
@@ -154,8 +153,7 @@ public class TAB2Loader : IDisposable, IBotInstance
     private async Task ClientOnSlashCommandExecuted(SocketSlashCommand slashCommand)
     {
         SlashCommandContext context = new SlashCommandContext(slashCommand);
-        // TODO: get subcommands...
-        await slashCommandManager.RunCommand(context, slashCommand.CommandName);
+        await slashCommandManager.RunCommand(context);
     }
 
     private async Task ClientOnReady()

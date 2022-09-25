@@ -12,4 +12,5 @@ public interface ICommandContext
     object? GetArgument(string name);
     Task DeferAsync();
     Task RespondAsync(string message = "", Embed? embed = null);
+    MultiStringHash GetCommandNameHash();
 }

@@ -1,4 +1,4 @@
-﻿namespace TAB2.Command;
+﻿namespace TAB2.Api.Interaction;
 
 public struct MultiStringHash
 {

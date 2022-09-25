@@ -27,20 +27,31 @@ public class SlashCommandManager
         SlashCommandBuilder commandBuilder = new SlashCommandBuilder()
             .WithName(command.Name)
             .WithDescription(command.Description);
+        
+        foreach (SubCommandGroup subCommandGroup in command.SubCommandGroups)
+        {
+            SlashCommandOptionBuilder subCommandGroupBuilder = new SlashCommandOptionBuilder()
+                .WithName(subCommandGroup.Name)
+                .WithDescription(subCommandGroup.Description)
+                .WithType(ApplicationCommandOptionType.SubCommandGroup);
+
+            foreach (SubCommand subCommand in subCommandGroup.SubCommands)
+            {
+                SlashCommandOptionBuilder subCommandBuilder = GetSubCommandBuilder(subCommand);
+            
+                AddCommandTask(subCommand.ExecutesTaskDelegate, command.Name, subCommandGroup.Name, subCommand.Name);
+                subCommandGroupBuilder.AddOption(subCommandBuilder);
+            }
+
+            commandBuilder.AddOption(subCommandGroupBuilder);
+        }
 
         foreach (SubCommand subCommand in command.SubCommands)
         {
-            SlashCommandOptionBuilder subCommandBuilder = new SlashCommandOptionBuilder()
-                .WithName(subCommand.Name)
-                .WithDescription(subCommand.Description);
+            SlashCommandOptionBuilder subCommandBuilder = GetSubCommandBuilder(subCommand);
 
-            SubCommandOptionAdder subCommandOptionAdder = new SubCommandOptionAdder(subCommandBuilder);
-            foreach (Argument argument in subCommand.Arguments)
-            {
-                SetupArgument(subCommandOptionAdder, argument);
-            }
-            
             AddCommandTask(subCommand.ExecutesTaskDelegate, command.Name, subCommand.Name);
+            commandBuilder.AddOption(subCommandBuilder);
         }
 
         SlashCommandOptionAdder optionAdder = new SlashCommandOptionAdder(commandBuilder);
@@ -48,6 +59,22 @@ public class SlashCommandManager
         
         commandBuilders.Add(commandBuilder);
         AddCommandTask(command.ExecutesTaskDelegate, command.Name);
+    }
+
+    private SlashCommandOptionBuilder GetSubCommandBuilder(SubCommand subCommand)
+    {
+        SlashCommandOptionBuilder subCommandBuilder = new SlashCommandOptionBuilder()
+            .WithName(subCommand.Name)
+            .WithDescription(subCommand.Description)
+            .WithType(ApplicationCommandOptionType.SubCommand);
+
+        SubCommandOptionAdder subCommandOptionAdder = new SubCommandOptionAdder(subCommandBuilder);
+        foreach (Argument argument in subCommand.Arguments)
+        {
+            SetupArgument(subCommandOptionAdder, argument);
+        }
+
+        return subCommandBuilder;
     }
 
     private void AddCommandTask(CommandExecutesTaskDelegate? taskDelegate, params string[] names)
@@ -131,9 +158,9 @@ public class SlashCommandManager
         }
     }
 
-    public Task RunCommand(ICommandContext context, params string[] commandNames)
+    public Task RunCommand(ICommandContext context)
     {
-        MultiStringHash nameHash = new MultiStringHash(commandNames);
+        MultiStringHash nameHash = context.GetCommandNameHash();
         if (executesTasks.TryGetValue(nameHash, out CommandExecutesTaskDelegate? taskDelegate))
         {
             return taskDelegate(context);

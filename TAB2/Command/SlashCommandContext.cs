@@ -19,7 +19,10 @@ public class SlashCommandContext : ICommandContext
         this.slashCommand = slashCommand;
         User = slashCommand.User;
         Channel = slashCommand.Channel;
-        arguments = slashCommand.Data.Options.ToDictionary(x => x.Name, x => x.Value);
+        arguments = slashCommand.Data.Options
+            .Flatten(x => x.Options)
+            .Where(x => x.Type != ApplicationCommandOptionType.SubCommand && x.Type != ApplicationCommandOptionType.SubCommandGroup)
+            .ToDictionary(x => x.Name, x => x.Value);
     }
 
     public bool GetArgument<T>(string name, out T? value)
@@ -65,5 +68,34 @@ public class SlashCommandContext : ICommandContext
         {
             await slashCommand.FollowupAsync(message, embeds);
         }
+    }
+
+    public MultiStringHash GetCommandNameHash()
+    {
+        List<string> subCommandNames = new List<string>();
+        subCommandNames.Add(slashCommand.CommandName);
+
+        SocketSlashCommandDataOption? second = slashCommand
+            .Data.Options
+            .FirstOrDefault(x => 
+                x.Type == ApplicationCommandOptionType.SubCommandGroup || 
+                x.Type == ApplicationCommandOptionType.SubCommand);
+        
+        SocketSlashCommandDataOption? third = second
+            ?.Options
+            .FirstOrDefault(x => 
+                x.Type == ApplicationCommandOptionType.SubCommand);
+
+        if (second != null)
+        {
+            subCommandNames.Add(second.Name);
+        }
+        
+        if (third != null)
+        {
+            subCommandNames.Add(third.Name);
+        }
+
+        return new MultiStringHash(subCommandNames.ToArray());
     }
 }
