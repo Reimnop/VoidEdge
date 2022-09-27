@@ -14,7 +14,7 @@ public class ModuleMain : BaseModule
     public const string Id = "antiping";
     public const string Version = "1.0.0";
 
-    public const string StrikesId = $"{Id}_strikes";
+    public const string StrikeId = $"{Id}_strikes";
 
     private IBotInstance instance;
     private IDataManager dataManager;
@@ -28,7 +28,7 @@ public class ModuleMain : BaseModule
         dataManager = instance.DataManager;
         
         dataManager.RegisterData(Id, config);
-        dataManager.RegisterData(StrikesId, config);
+        dataManager.RegisterData(StrikeId, config);
     }
 
     public override async Task OnMessageReceived(SocketMessage message)
@@ -53,11 +53,17 @@ public class ModuleMain : BaseModule
         IEnumerable<SocketGuildUser> pingedUsers = userMessage.MentionedUsers
             .OfType<SocketGuildUser>()
             .Where(x => x.Id != userMessage.Author.Id)
-            .Where(x => x.Roles.Any(r => guildConfig.PingRoleIds.Contains(r.Id)));
+            .Where(x => x.Roles.Any(r => guildConfig.ContainsRole(r.Id)));
 
-        foreach (SocketGuildUser pingedUser in pingedUsers)
+        SocketGuildUser? pingedUser = pingedUsers.FirstOrDefault();
+        
+        if (pingedUser != null)
         {
-            await userMessage.ReplyAsync($"you can't ping {pingedUser.Username} dumbass");
+            GuildStrikeData guildStrikeData = strikeData.GetGuildData(guildChannel.Guild.Id);
+            int strikes = guildStrikeData.GetStrike(message.Author.Id) + 1;
+            guildStrikeData.SetStrike(message.Author.Id, strikes);
+            
+            await userMessage.ReplyAsync($"you can't ping {pingedUser.Username} dumbass, you now have {strikes} strikes");
         }
     }
 
@@ -101,7 +107,12 @@ public class ModuleMain : BaseModule
         
         EmbedBuilder embedBuilder = new EmbedBuilder()
             .WithTitle("Anti Ping roles")
-            .WithDescription(string.Join('\n', guildConfig.PingRoleIds.Select(x => $"<@&{x}>")));
+            .WithDescription(
+                string.Join('\n', guildConfig
+                        .GetPingRoles()
+                        .Select(x => $"<@&{x}>")
+                    )
+                );
 
         await context.RespondAsync(embed: embedBuilder.Build());
     }

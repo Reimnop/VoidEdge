@@ -5,38 +5,48 @@ namespace AntiPing;
 
 public class GuildConfig
 {
-    public HashSet<ulong> PingRoleIds { get; } = new HashSet<ulong>();
+    private readonly HashSet<ulong> pingRoleIds = new HashSet<ulong>();
 
+    public IReadOnlyCollection<ulong> GetPingRoles()
+    {
+        return pingRoleIds;
+    }
+
+    public bool ContainsRole(ulong roleId)
+    {
+        return pingRoleIds.Contains(roleId);
+    }
+    
     public void AddRoleId(ulong roleId)
     {
-        if (!PingRoleIds.Contains(roleId))
+        if (!pingRoleIds.Contains(roleId))
         {
-            PingRoleIds.Add(roleId);
+            pingRoleIds.Add(roleId);
         }
     }
     
     public void RemoveRoleId(ulong roleId)
     {
-        if (PingRoleIds.Contains(roleId))
+        if (pingRoleIds.Contains(roleId))
         {
-            PingRoleIds.Remove(roleId);
+            pingRoleIds.Remove(roleId);
         }
     }
     
     public void WriteData(TagDictionary dictionary)
     {
-        string[] ids = PingRoleIds.Select(x => x.ToString()).ToArray();
+        string[] ids = pingRoleIds.Select(x => x.ToString()).ToArray();
         dictionary.Add("role_ids", ids);
     }
 
     public void ReadData(TagDictionary dictionary)
     {
-        PingRoleIds.Clear();
+        pingRoleIds.Clear();
         
         TagCollection tags = (TagCollection) dictionary["role_ids"].GetValue();
         foreach (Tag tag in tags)
         {
-            PingRoleIds.Add(ulong.Parse((string) tag.GetValue()));
+            pingRoleIds.Add(ulong.Parse((string) tag.GetValue()));
         }
     }
 }
