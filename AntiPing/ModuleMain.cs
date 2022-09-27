@@ -28,7 +28,7 @@ public class ModuleMain : BaseModule
         dataManager = instance.DataManager;
         
         dataManager.RegisterData(Id, config);
-        dataManager.RegisterData(StrikeId, config);
+        dataManager.RegisterData(StrikeId, strikeData);
     }
 
     public override async Task OnMessageReceived(SocketMessage message)
@@ -62,6 +62,7 @@ public class ModuleMain : BaseModule
             GuildStrikeData guildStrikeData = strikeData.GetGuildData(guildChannel.Guild.Id);
             int strikes = guildStrikeData.GetStrike(message.Author.Id) + 1;
             guildStrikeData.SetStrike(message.Author.Id, strikes);
+            dataManager.SaveData(StrikeId);
             
             await userMessage.ReplyAsync($"you can't ping {pingedUser.Username} dumbass, you now have {strikes} strikes");
         }
