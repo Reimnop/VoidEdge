@@ -5,6 +5,8 @@ namespace AntiPing;
 
 public class GuildConfig
 {
+    public int MaxStrikes { get; set; } = 3;
+
     private readonly HashSet<ulong> pingRoleIds = new HashSet<ulong>();
 
     public IReadOnlyCollection<ulong> GetPingRoles()
@@ -37,6 +39,7 @@ public class GuildConfig
     {
         string[] ids = pingRoleIds.Select(x => x.ToString()).ToArray();
         dictionary.Add("role_ids", ids);
+        dictionary.Add("max_strikes", MaxStrikes);
     }
 
     public void ReadData(TagDictionary dictionary)
@@ -48,5 +51,7 @@ public class GuildConfig
         {
             pingRoleIds.Add(ulong.Parse((string) tag.GetValue()));
         }
+
+        MaxStrikes = (int) dictionary["max_strikes"].GetValue();
     }
 }

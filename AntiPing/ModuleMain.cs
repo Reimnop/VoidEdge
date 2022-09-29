@@ -63,8 +63,15 @@ public class ModuleMain : BaseModule
             int strikes = guildStrikeData.GetStrike(message.Author.Id) + 1;
             guildStrikeData.SetStrike(message.Author.Id, strikes);
             dataManager.SaveData(StrikeId);
+
+            EmbedBuilder embedBuilder = new EmbedBuilder()
+                .WithTitle("Anti Ping")
+                .WithDescription(
+                    $"Do not ping {pingedUser.Username} as they have a role that specifically tells people not to ping them!\n" +
+                    $"You now have {strikes} strikes")
+                .WithFooter($"Please do not reach {guildConfig.MaxStrikes} strikes or you'll be timed out!");
             
-            await userMessage.ReplyAsync($"you can't ping {pingedUser.Username} dumbass, you now have {strikes} strikes");
+            await userMessage.ReplyAsync(embed: embedBuilder.Build());
         }
     }
 
