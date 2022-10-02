@@ -17,16 +17,20 @@ if (token == null)
     return;
 }
 
+#if !DEBUG
 try
 {
+#endif
     log.Info("Starting TAB2 Loader");
     
     using TAB2Loader main = new TAB2Loader();
     Task runTask = main.Run(token);
     TaskAwaiter awaiter = runTask.GetAwaiter();
     awaiter.GetResult();
+#if !DEBUG
 }
 catch (Exception e)
 {
     log.Fatal("Crash!!", e);
 }
+#endif

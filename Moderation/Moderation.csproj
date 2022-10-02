@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Moderation\Moderation.csproj" />
       <ProjectReference Include="..\TAB2.Api\TAB2.Api.csproj" />
     </ItemGroup>
 

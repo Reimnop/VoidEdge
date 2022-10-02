@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Discord;
 using Discord.WebSocket;
+using Moderation;
 using TAB2.Api;
 using TAB2.Api.Interaction;
 using TAB2.Api.Module;
@@ -14,13 +15,10 @@ public class ModuleMain : BaseModule
     public const string Id = "antiping";
     public const string Version = "1.0.0";
 
-    public const string StrikeId = $"{Id}_strikes";
-
     private IBotInstance instance;
     private IDataManager dataManager;
     
     private Config config = new Config();
-    private StrikeData strikeData = new StrikeData();
 
     public override void Initialize(IBotInstance instance)
     {
@@ -28,7 +26,6 @@ public class ModuleMain : BaseModule
         dataManager = instance.DataManager;
         
         dataManager.RegisterData(Id, config);
-        dataManager.RegisterData(StrikeId, strikeData);
     }
 
     public override async Task OnMessageReceived(SocketMessage message)
@@ -59,19 +56,8 @@ public class ModuleMain : BaseModule
         
         if (pingedUser != null)
         {
-            GuildStrikeData guildStrikeData = strikeData.GetGuildData(guildChannel.Guild.Id);
-            int strikes = guildStrikeData.GetStrike(message.Author.Id) + 1;
-            guildStrikeData.SetStrike(message.Author.Id, strikes);
-            dataManager.SaveData(StrikeId);
-
-            EmbedBuilder embedBuilder = new EmbedBuilder()
-                .WithTitle("Anti Ping")
-                .WithDescription(
-                    $"Do not ping {pingedUser.Username} as they have a role that specifically tells people not to ping them!\n" +
-                    $"You now have {strikes} strikes")
-                .WithFooter($"Please do not reach {guildConfig.MaxStrikes} strikes or you'll be timed out!");
-            
-            await userMessage.ReplyAsync(embed: embedBuilder.Build());
+            EmbedBuilder builder = ModerationAPI.StrikeUser((IGuildUser) message.Author, $"pinging {pingedUser.Mention} while they have requested not to be pinged");
+            await userMessage.ReplyAsync(embed: builder.Build());
         }
     }
 

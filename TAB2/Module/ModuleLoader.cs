@@ -41,7 +41,8 @@ public static class ModuleLoader
         }
         
         // Loads the assembly
-        Assembly assembly = Assembly.LoadFile(path);
+        ModuleLoadContext context = new ModuleLoadContext(path);
+        Assembly assembly = context.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(path)));
         
         // Guaranteed to be non-null
         Type entryType = assembly
