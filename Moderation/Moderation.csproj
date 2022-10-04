@@ -7,7 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TAB2.Api\TAB2.Api.csproj" />
+      <ProjectReference Include="..\TAB2.Api\TAB2.Api.csproj">
+          <Private>false</Private>
+          <ExcludeAssets>runtime</ExcludeAssets>
+      </ProjectReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="log4net" Version="2.0.14" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Reflection;
+using System.Text;
 using log4net;
 using TAB2.Api;
 using TAB2.Api.Module;
@@ -39,18 +40,25 @@ public class ModuleManager
         IEnumerable<FileInfo> assemblyFiles = directoryInfo
             .EnumerateFiles()
             .Where(x => x.Extension.Equals(".dll", StringComparison.OrdinalIgnoreCase));
-        
+
+        List<Assembly> assemblies = new List<Assembly>();
+
         foreach (FileInfo assemblyFile in assemblyFiles)
         {
-            Module? module = LoadModule(assemblyFile.FullName);
-
-            if (module == null)
+            if (ModuleLoader.TryLoadModule(assemblyFile.FullName, out Assembly? assembly))
+            {
+                assemblies.Add(assembly);
+            }
+            else
             {
                 log.Warn($"Could not load module from file '{assemblyFile.FullName}'! (Invalid entrypoint)");
-                continue;
             }
-            
-            modules.Add(module);
+        }
+
+        foreach (Assembly assembly in assemblies)
+        {
+            ModuleLoader.ModuleToAttributes(assembly, out BaseModule entryPoint, out ModuleEntryAttribute attribute);
+            modules.Add(new Module(entryPoint, attribute));
         }
         
         LogDiscoveredModules(modules);
@@ -72,16 +80,6 @@ public class ModuleManager
             text.Append($"    - {module.Attribute.Name} (id: '{module.Attribute.Id}', version: {module.Attribute.Version})\n");
         }
         log.Info(text.ToString());
-    }
-
-    private Module? LoadModule(string path)
-    {
-        if (!ModuleLoader.TryLoadModule(path, out BaseModule? entryPoint, out ModuleEntryAttribute? attribute))
-        {
-            return null;
-        }
-        
-        return new Module(entryPoint, attribute);
     }
 
     public void RunOnAllModules(ModuleRunDelegate moduleRunDelegate)

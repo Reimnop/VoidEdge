@@ -44,6 +44,8 @@ public class ModuleMain : BaseModule
         {
             return;
         }
+
+        IGuildUser guildUser = (IGuildUser) userMessage.Author;
         
         GuildConfig guildConfig = config.GetGuildConfig(guildChannel.Guild.Id);
         
@@ -56,8 +58,18 @@ public class ModuleMain : BaseModule
         
         if (pingedUser != null)
         {
-            EmbedBuilder builder = ModerationAPI.StrikeUser((IGuildUser) message.Author, $"pinging {pingedUser.Mention} while they have requested not to be pinged");
-            await userMessage.ReplyAsync(embed: builder.Build());
+            StrikeResult result = await ModerationAPI.StrikeUserAsync(guildUser, $"pinging {pingedUser.Mention} while they have requested not to be pinged");
+            
+            if (result.Punished)
+            {
+                await guildUser.SendMessageAsync(embed: result.Message.Build());
+            }
+            else
+            {
+                IUserMessage replyMessage = await userMessage.ReplyAsync(embed: result.Message.Build());
+                await Task.Delay(10000); // 10 seconds
+                await replyMessage.DeleteAsync();
+            }
         }
     }
 

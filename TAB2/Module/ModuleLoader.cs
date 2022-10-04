@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.Loader;
 using Mono.Cecil;
 using TAB2.Api.Module;
 
@@ -10,13 +11,9 @@ namespace TAB2.Module;
 
 public static class ModuleLoader
 {
-    public static bool TryLoadModule(
-        string path,
-        [MaybeNullWhen(false)] out BaseModule baseModule, 
-        [MaybeNullWhen(false)] out ModuleEntryAttribute attribute)
+    public static bool TryLoadModule(string path, [MaybeNullWhen(false)] out Assembly assembly)
     {
-        baseModule = null;
-        attribute = null;
+        assembly = null;
         
         // Check if assembly is valid without loading
         int entryCount = 0;
@@ -41,18 +38,21 @@ public static class ModuleLoader
         }
         
         // Loads the assembly
-        ModuleLoadContext context = new ModuleLoadContext(path);
-        Assembly assembly = context.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(path)));
-        
-        // Guaranteed to be non-null
+        assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
+        return true;
+    }
+
+    public static void ModuleToAttributes(
+        Assembly assembly,
+        out BaseModule baseModule,
+        out ModuleEntryAttribute attribute)
+    {
         Type entryType = assembly
             .GetTypes()
             .First(x => !x.IsInterface && !x.IsAbstract && typeof(BaseModule).IsAssignableFrom(x) && x.GetCustomAttribute(typeof(ModuleEntryAttribute)) != null);
 
         baseModule = (BaseModule) Activator.CreateInstance(entryType);
         attribute = (ModuleEntryAttribute) Attribute.GetCustomAttribute(entryType, typeof(ModuleEntryAttribute));
-        
-        return true;
     }
     
     private static bool TryGetCustomAttribute(TypeDefinition type, Type attributeType, [MaybeNullWhen(false)] out CustomAttribute result)

@@ -4,9 +4,9 @@ namespace Moderation;
 
 public static class ModerationAPI
 {
-    public static EmbedBuilder StrikeUser(IGuildUser user, string reason)
+    public static Task<StrikeResult> StrikeUserAsync(IGuildUser user, string reason)
     {
-        return ModuleMain.Instance.StrikeUser(user, reason);
+        return ModuleMain.Instance.StrikeUserAsync(user, reason);
     }
     
     public static int GetUserStrikes(IGuildUser user)

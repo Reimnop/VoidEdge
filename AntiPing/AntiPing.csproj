@@ -7,8 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Moderation\Moderation.csproj" />
-      <ProjectReference Include="..\TAB2.Api\TAB2.Api.csproj" />
+      <ProjectReference Include="..\Moderation\Moderation.csproj" >
+          <Private>false</Private>
+          <ExcludeAssets>runtime</ExcludeAssets>
+      </ProjectReference>
+      <ProjectReference Include="..\TAB2.Api\TAB2.Api.csproj" >
+          <Private>false</Private>
+          <ExcludeAssets>runtime</ExcludeAssets>
+      </ProjectReference>
     </ItemGroup>
 
 </Project>
