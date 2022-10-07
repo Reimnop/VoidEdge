@@ -1,4 +1,6 @@
-﻿namespace TAB2.Api.Interaction;
+﻿using Discord;
+
+namespace TAB2.Api.Interaction;
 
 public delegate Task CommandExecutesTaskDelegate(ICommandContext commandContext);
 
@@ -6,6 +8,7 @@ public class Command
 {
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public GuildPermission? Permission { get; set; } 
     public List<Argument> Arguments { get; } = new List<Argument>();
     public List<SubCommand> SubCommands { get; } = new List<SubCommand>();
     public List<SubCommandGroup> SubCommandGroups { get; } = new List<SubCommandGroup>();
@@ -20,6 +23,12 @@ public class Command
     public Command WithDescription(string description)
     {
         Description = description;
+        return this;
+    }
+
+    public Command WithPermission(GuildPermission? permission)
+    {
+        Permission = permission;
         return this;
     }
 

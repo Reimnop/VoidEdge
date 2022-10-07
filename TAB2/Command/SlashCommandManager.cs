@@ -26,7 +26,8 @@ public class SlashCommandManager
         
         SlashCommandBuilder commandBuilder = new SlashCommandBuilder()
             .WithName(command.Name)
-            .WithDescription(command.Description);
+            .WithDescription(command.Description)
+            .WithDefaultMemberPermissions(command.Permission);
         
         foreach (SubCommandGroup subCommandGroup in command.SubCommandGroups)
         {
