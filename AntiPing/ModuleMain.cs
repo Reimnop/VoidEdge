@@ -78,6 +78,7 @@ public class ModuleMain : BaseModule
         yield return new Command()
             .WithName("antiping")
             .WithDescription("Changes how Anti Ping behaves")
+            .WithPermission(GuildPermission.Administrator)
             .AddSubCommandGroup(new SubCommandGroup()
                 .WithName("roles")
                 .WithDescription("Add or remove anti ping roles")
