@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.Loader;
 using System.Text;
 using log4net;
 using TAB2.Api;
@@ -45,22 +46,13 @@ public class ModuleManager
 
         foreach (FileInfo assemblyFile in assemblyFiles)
         {
-            if (ModuleLoader.TryLoadModule(assemblyFile.FullName, out Assembly? assembly))
-            {
-                assemblies.Add(assembly);
-            }
-            else
-            {
-                log.Warn($"Could not load module from file '{assemblyFile.FullName}'! (Invalid entrypoint)");
-            }
-        }
-
-        foreach (Assembly assembly in assemblies)
-        {
-            ModuleLoader.ModuleToAttributes(assembly, out BaseModule entryPoint, out ModuleEntryAttribute attribute);
-            modules.Add(new Module(entryPoint, attribute));
+            assemblies.Add(AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFile.FullName));
         }
         
+        modules = assemblies
+            .SelectMany(x => GetModulesFromAssembly(x))
+            .ToList();
+
         LogDiscoveredModules(modules);
 
         foreach (Module module in modules)
@@ -80,6 +72,27 @@ public class ModuleManager
             text.Append($"    - {module.Attribute.Name} (id: '{module.Attribute.Id}', version: {module.Attribute.Version})\n");
         }
         log.Info(text.ToString());
+    }
+    
+    public IEnumerable<Module> GetModulesFromAssembly(Assembly assembly)
+    {
+        foreach (Type type in assembly.GetTypes())
+        {
+            if (type.IsInterface || type.IsAbstract || !typeof(BaseModule).IsAssignableFrom(type) || type.GetCustomAttribute(typeof(ModuleEntryAttribute)) == null)
+            {
+                continue;
+            }
+
+            BaseModule? baseModule = (BaseModule?) Activator.CreateInstance(type);
+            ModuleEntryAttribute? attribute = (ModuleEntryAttribute?) Attribute.GetCustomAttribute(type, typeof(ModuleEntryAttribute));
+
+            if (baseModule == null || attribute == null)
+            {
+                continue;
+            }
+            
+            yield return new Module(baseModule, attribute);
+        }
     }
 
     public void RunOnAllModules(ModuleRunDelegate moduleRunDelegate)
